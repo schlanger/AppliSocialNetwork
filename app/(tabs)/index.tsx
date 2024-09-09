@@ -2,6 +2,19 @@ import { View, Image, StyleSheet, FlatList, Text, TouchableOpacity, Platform } f
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useState } from 'react';
+import Header from '@/components/header';
+import { useLocalSearchParams } from 'expo-router';
+
+export default function SocialApp() {
+
+  const params = useLocalSearchParams();
+
+  const [likeCount, setLikeCount] = useState(0);
+
+  const handleLikePress = () => {
+    setLikeCount(likeCount + 1);
+  };
 
 const posts = [
   {
@@ -23,19 +36,11 @@ const posts = [
   // Add more posts here
 ];
 
-export default function SocialApp() {
+
   return (
-    <ThemedView style={styles.container}>
-      {/* Header */}
-      <ThemedView style={styles.header}>
-        <Image source={require('@/assets/images/logo.png')} style={styles.logo} />
-        </ThemedView>
+     <><Header
 
-        <View style= {styles.separator}></View>
-        
-
-      {/* Feed Section */}
-      <FlatList
+        /><FlatList
         data={posts}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
@@ -52,20 +57,23 @@ export default function SocialApp() {
             <Image source={item.image} style={styles.image} />
 
             <View style={styles.postActions}>
-              <TouchableOpacity style={styles.actionButton}>
-                <Text>👍 Like</Text>
+              <TouchableOpacity style={styles.actionButton} onPress={handleLikePress}>
+                <Text>👍 Like {likeCount} </Text>
               </TouchableOpacity>
+
               <TouchableOpacity style={styles.actionButton}>
                 <Text>💬 Comment</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.actionButton}>
                 <Text>🔄 Share</Text>
               </TouchableOpacity>
+
+              <Text> {params.name}</Text>
             </View>
           </ThemedView>
-        )}
-      />
-    </ThemedView>
+
+
+        )} /></>
   );
 }
 
@@ -152,5 +160,10 @@ const styles = StyleSheet.create({
   separator: {
     height: 15, 
     backgroundColor: '#F0F0F0',
+  },
+  likeCountText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#333',
   },
 });
