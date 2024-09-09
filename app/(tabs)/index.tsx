@@ -1,70 +1,146 @@
-import { Image, StyleSheet, Platform } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
+import { View, Image, StyleSheet, FlatList, Text, TouchableOpacity, Platform } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
-export default function HomeScreen() {
+const posts = [
+  {
+    id: '1',
+    user: 'John Doe',
+    jobTitle: 'Software Engineer',
+    avatar: require('@/assets/images/profil.png'),
+    content: 'What do you think about my last vacation at California? 🌞',
+    image : require('@/assets/images/horse.png')
+  },
+  {
+    id: '2',
+    user: 'Jane Smith',
+    jobTitle: 'Product Manager',
+    avatar: require('@/assets/images/profil.png'),
+    content: 'Looking for a UI/UX designer to join our team. DM me!',
+    image : require('@/assets/images/UX.png')
+  },
+  // Add more posts here
+];
+
+export default function SocialApp() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <ThemedView style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <View style={styles.headerRight}>
+        </View>
+        </View>
+
+      {/* Feed Section */}
+      <FlatList
+        data={posts}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <ThemedView style={styles.postContainer}>
+            <View style={styles.postHeader}>
+              <Image source={item.avatar} style={styles.avatar} />
+              <View>
+                <Text style={styles.username}>{item.user}</Text>
+                <Text style={styles.jobTitle}>{item.jobTitle}</Text>
+              </View>
+            </View>
+            <Text style={styles.postContent}>{item.content}</Text>
+
+            <Image source={item.image} style={styles.image} />
+
+            <View style={styles.postActions}>
+              <TouchableOpacity style={styles.actionButton}>
+                <Text>👍 Like</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.actionButton}>
+                <Text>💬 Comment</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.actionButton}>
+                <Text>🔄 Share</Text>
+              </TouchableOpacity>
+            </View>
+          </ThemedView>
+        )}
+      />
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+    backgroundColor: '#F0F0F0',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 50,
+    backgroundColor: '#0077B5',
+  },
+  logo: {
+    height: 30,
+    width: 100,
+  },
+  headerRight: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  icon: {
+    height: 25,
+    width: 25,
+    marginLeft: 15,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  profilePic: {
+    height: 30,
+    width: 30,
+    borderRadius: 15,
+    marginLeft: 15,
   },
+  postContainer: {
+    backgroundColor: '#FFF',
+    padding: 15,
+    marginBottom: 10,
+  },
+  postHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  avatar: {
+    height: 40,
+    width: 40,
+    borderRadius: 20,
+    marginRight: 10,
+  },
+  username: {
+    fontWeight: 'bold',
+  },
+  jobTitle: {
+    color: '#555',
+  },
+  postContent: {
+    marginBottom: 10,
+  },
+  postActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  actionButton: {
+    padding: 5,
+    backgroundColor: '#EAEAEA',
+    borderRadius: 5,
+  },
+  bottomNav: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    padding: 10,
+    backgroundColor: '#FFF',
+    borderTopWidth: 1,
+    borderTopColor: '#DDD',
+  },
+  image : {
+    height: 200,
+    width: '100%'
+  }
 });
