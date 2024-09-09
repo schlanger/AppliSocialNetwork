@@ -1,6 +1,7 @@
 import { View, Image, StyleSheet, FlatList, Text, TouchableOpacity, Platform } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const posts = [
   {
@@ -26,10 +27,12 @@ export default function SocialApp() {
   return (
     <ThemedView style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerRight}>
-        </View>
-        </View>
+      <ThemedView style={styles.header}>
+        <Image source={require('@/assets/images/logo.png')} style={styles.logo} />
+        </ThemedView>
+
+        <View style= {styles.separator}></View>
+        
 
       {/* Feed Section */}
       <FlatList
@@ -75,12 +78,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 50,
-    backgroundColor: '#0077B5',
+    padding: 15,
+    backgroundColor: '#FFF',
   },
   logo: {
-    height: 30,
+    height: 60,
     width: 100,
+    marginLeft: -15,
+    marginTop: 30
+
   },
   headerRight: {
     flexDirection: 'row',
@@ -142,5 +148,9 @@ const styles = StyleSheet.create({
   image : {
     height: 200,
     width: '100%'
-  }
+  },
+  separator: {
+    height: 15, 
+    backgroundColor: '#F0F0F0',
+  },
 });
