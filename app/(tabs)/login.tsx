@@ -1,3 +1,5 @@
+import MyButton from "@/components/MyButton";
+import React from "react";
 import { Button, TextInput, View } from "react-native";
 import { Text } from "react-native";
 import { StyleSheet } from "react-native";
@@ -17,16 +19,36 @@ export default function login() {
         password: '7891011',
         },
     ]
-    
-    return (
 
+    const [email, setEmail] = React.useState('');
+
+    const [password, setPassword] = React.useState('');
+
+    const handleEmail = (text: string) => {
+        setEmail(text);
+    }
+
+    const handlePassword = (text: string) => {
+        setPassword(text);
+    }
+    const handleLogin = () => {
+        users.map((user) => {
+            if (email === user.email && password === user.password) {
+                alert('connecté');
+            } else {
+                alert('email ou mot de passe incorrect');
+            }
+        })
+    }
+
+    return (
         
         <><View style={styles.container}>
-        <Text style={styles.title}>Login</Text>
-        <TextInput style={styles.input} placeholder="Email" />
-        <TextInput style={styles.input} placeholder="Password" />
-        <Button title="Login" onPress={() => alert('Login')} />
-        <Button title="Sign up" onPress={() => alert('Sign up')} />
+        <Text style={styles.title}>Connexion</Text>
+        <TextInput style={styles.input} placeholder="Email" onChangeText={handleEmail}/>
+        <TextInput style={styles.input} placeholder="Password" onChangeText={handlePassword} />
+        <MyButton handleRedirect={handleLogin} buttonText="login" />
+        <Text style={styles.text}>Pas encore de compte cliiquez içi</Text>
       </View></>)
     
     };
@@ -45,8 +67,25 @@ const styles = StyleSheet.create({
       },
       input: {
         height: 40,
+        width: 300,
         margin: 12,
         borderWidth: 1,
         padding: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
       },
+      button : {
+        margin: 20,
+        color: 'blue',
+        borderBottomColor : 'blue',
+        borderBottomWidth : 1,
+
+      },
+      text : {
+        color: 'black',
+        margin: 20,
+        fontSize: 12,
+        right: 40,
+        padding: 10,
+      }
     });
