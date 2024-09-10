@@ -13,6 +13,7 @@ import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import MyButton from '@/components/MyButton';
 import * as ImagePicker from 'expo-image-picker';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function Posts() {
 
@@ -21,7 +22,7 @@ export default function Posts() {
   const router = useRouter();
 
   const handleRedirect = () => {
-    router.push(`/tabs/index?name=${text}`);
+    //router.push(`/tabs/index?name=${text}`);
   }
 
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -50,6 +51,8 @@ export default function Posts() {
 
   return (
 
+    <GestureHandlerRootView style={{ flex: 1 }}>
+
     <><Header></Header>
 
     <ThemedView>
@@ -69,6 +72,8 @@ export default function Posts() {
 
     <MyButton handleRedirect={handleRedirect} buttonText="Post" />
     </ThemedView></>
+    
+    </GestureHandlerRootView>
   );
 }
 

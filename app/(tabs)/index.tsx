@@ -5,6 +5,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import Header from '@/components/header';
 import { useLocalSearchParams } from 'expo-router';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import MainNavigator from './';
 
 export default function SocialApp() {
 
@@ -33,11 +35,23 @@ const posts = [
     content: 'Looking for a UI/UX designer to join our team. DM me!',
     image : require('@/assets/images/UX.png')
   },
+
+  {
+    id: '3',  
+    user: 'Joe Bloggs',
+    jobTitle: 'Frontend Developer',
+    avatar: require('@/assets/images/me.png'),
+    content: 'Just published my new portfolio website. Check it out!',
+    image : require('@/assets/images/portfolio.png')
+  }
   // Add more posts here
 ];
 
 
   return (
+
+    <GestureHandlerRootView style={{ flex: 1 }}>
+
      <><Header
 
         /><FlatList
@@ -73,7 +87,9 @@ const posts = [
           </ThemedView>
 
 
+
         )} /></>
+    </GestureHandlerRootView>
   );
 }
 
