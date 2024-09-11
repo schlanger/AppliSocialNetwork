@@ -6,9 +6,9 @@ import { useState } from 'react';
 import Header from '@/components/header';
 import { useLocalSearchParams } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import MainNavigator from './';
+import MainNavigator from '.';
 
-export default function SocialApp() {
+export default function index() {
 
   const params = useLocalSearchParams();
 

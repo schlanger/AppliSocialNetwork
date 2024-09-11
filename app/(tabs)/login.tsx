@@ -48,7 +48,6 @@ export default function login() {
         <TextInput style={styles.input} placeholder="Email" onChangeText={handleEmail}/>
         <TextInput style={styles.input} placeholder="Password" onChangeText={handlePassword} />
         <MyButton handleRedirect={handleLogin} buttonText="login" />
-        <Text style={styles.text}>Pas encore de compte cliiquez içi</Text>
       </View></>)
     
     };

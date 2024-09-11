@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, Image, Platform, Button } from 'react-native';
+import { StyleSheet, Image, Platform, Button, View } from 'react-native';
 
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
@@ -21,9 +21,13 @@ export default function Posts() {
 
   const router = useRouter();
 
-  const handleRedirect = () => {
-    //router.push(`/tabs/index?name=${text}`);
-  }
+   const handleRedirect = () => {
+    router.push({
+      pathname: '/(tabs)/index',
+      params: { name: text },
+    });
+  };
+  
 
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
@@ -69,9 +73,11 @@ export default function Posts() {
       {selectedImage && (
         <Image source={{ uri: selectedImage }} style={styles.image} />
       )}
-
-    <MyButton handleRedirect={handleRedirect} buttonText="Post" />
     </ThemedView></>
+
+    <View style={styles.button}>
+    <MyButton handleRedirect={handleRedirect} buttonText="Post" />
+    </View>
     
     </GestureHandlerRootView>
   );
@@ -103,5 +109,11 @@ const styles = StyleSheet.create({
     width: 300,
     height: 300,
     marginTop: 20,
+  },
+  button : {
+    margin: 20,
+    justifyContent: 'center',
+    alignItems: 'center', 
+
   },
 });

@@ -35,7 +35,7 @@ return (
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 15,
+    padding: 5,
     backgroundColor: '#F0F0F0',
   },
   logo: {
