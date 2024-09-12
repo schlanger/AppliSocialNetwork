@@ -2,11 +2,14 @@ import { View, Image, StyleSheet, FlatList, Text, TouchableOpacity, Platform } f
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Header from '@/components/header';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import MainNavigator from '.';
+import {auth} from '@/config/firebaseConfig';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+
 
 export default function index() {
 
@@ -17,6 +20,32 @@ export default function index() {
   const handleLikePress = () => {
     setLikeCount(likeCount + 1);
   };
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const auth = getAuth();
+
+
+
+  useEffect(() => {
+    // Vérification de l'état d'authentification de l'utilisateur
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        // Si l'utilisateur n'est pas connecté, on le redirige vers la page de login
+        router.push('/(tabs)/login');
+      }
+      setLoading(false); // Firebase a terminé la vérification de l'utilisateur
+    });
+
+    // Nettoyage du listener
+    return () => unsubscribe();
+  }, [auth, router]);
+
+  if (loading) {
+    // Pendant que Firebase vérifie l'état de l'utilisateur, on peut afficher un indicateur de chargement ou simplement rien
+    return <Text>Chargement...</Text>;
+  }
+
+
 
 const posts = [
   {

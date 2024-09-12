@@ -1,6 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, Image, Platform, Button, View } from 'react-native';
-
+import { StyleSheet, Image, Platform, Button, View, Alert } from 'react-native';
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
@@ -14,19 +13,22 @@ import React, { useState } from 'react';
 import MyButton from '@/components/MyButton';
 import * as ImagePicker from 'expo-image-picker';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+// Import Firebase
+import { firestore, storage } from '@/config/firebaseConfig';
+import { addDoc, collection } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+
+
 
 export default function Posts() {
-
   const [text, onChangeText] = React.useState('');
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   const router = useRouter();
-  
-
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   // Fonction pour ouvrir la galerie d'images/vidéos
   const pickImage = async () => {
-    // Demander la permission d'accès aux médias
     let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (permissionResult.granted === false) {
@@ -34,9 +36,8 @@ export default function Posts() {
       return;
     }
 
-    // Ouvrir la galerie pour sélectionner une image ou une vidéo
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All, // Permet de sélectionner des images et des vidéos
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       quality: 1,
     });
@@ -46,38 +47,76 @@ export default function Posts() {
     }
   };
 
+  // Fonction pour stocker l'image dans Firebase Storage
+  const uploadImageToFirebase = async (uri: string | URL | Request) => {
+    try {
+      setUploading(true);
+      const response = await fetch(uri);
+      const blob = await response.blob();
+      const storageRef = ref(storage, `posts/${Date.now()}`);
+      await uploadBytes(storageRef, blob);
+      const downloadURL = await getDownloadURL(storageRef);
+      setUploading(false);
+      return downloadURL;
+    } catch (error) {
+      console.error('Erreur lors du téléchargement de l\'image :', error);
+      setUploading(false);
+      return null;
+    }
+  };
+
+  // Fonction pour sauvegarder le post dans Firestore
+  const savePostToFirestore = async (imageUrl: string | null) => {
+    try {
+      await addDoc(collection(firestore, 'posts'), {
+        text: text,
+        imageUrl: imageUrl || '',
+        createdAt: new Date(),
+      });
+      Alert.alert('Succès', 'Le post a été ajouté avec succès !');
+      onChangeText('');
+      setSelectedImage(null);
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout du post dans Firestore :', error);
+      Alert.alert('Erreur', 'Une erreur est survenue lors de l\'ajout du post.');
+    }
+  };
+
+  // Fonction pour gérer la soumission du post
+  const handlePost = async () => {
+    let imageUrl = null;
+    if (selectedImage) {
+      imageUrl = await uploadImageToFirebase(selectedImage);
+    }
+    savePostToFirestore(imageUrl);
+  };
+
   return (
-
     <GestureHandlerRootView style={{ flex: 1 }}>
+      <Header />
+      <ThemedView>
+        <ThemedText style={styles.title}>Posts</ThemedText>
+        <TextInput
+          style={styles.input}
+          placeholder="Write a post..."
+          onChangeText={onChangeText}
+          value={text}
+        />
+        <ThemedText style={styles.title}>Upload Image or Video</ThemedText>
+        <Button title="Select Image or Video" onPress={pickImage} />
+        {selectedImage && (
+          <Image source={{ uri: selectedImage }} style={styles.image} />
+        )}
+      </ThemedView>
 
-    <><Header></Header>
-
-    <ThemedView>
-      <ThemedText style={styles.title}>Posts</ThemedText>
-      <TextInput
-        style={styles.input}
-        placeholder="Write a post..." 
-        onChangeText={onChangeText}
-        value={ text }/>
-
-     <ThemedText style={styles.title}>Upload Image or Video</ThemedText>
-      <Button title="Select Image or Video" onPress={pickImage} />
-
-      {selectedImage && (
-        <Image source={{ uri: selectedImage }} style={styles.image} />
-      )}
-    </ThemedView></>
-
-    <View style={styles.button}>
-    <MyButton handleRedirect={() => {}} buttonText="Post" />
-    </View>
-
+      <View style={styles.button}>
+        <MyButton handleRedirect={handlePost} buttonText="Post" />
+      </View>
     </GestureHandlerRootView>
   );
 }
 
 const styles = StyleSheet.create({
-
   container: {
     position: 'absolute',
     top: 0,
@@ -91,7 +130,6 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: 'center',
     justifyContent: 'center',
-
   },
   title: {
     fontSize: 20,
@@ -103,10 +141,9 @@ const styles = StyleSheet.create({
     height: 300,
     marginTop: 20,
   },
-  button : {
+  button: {
     margin: 20,
     justifyContent: 'center',
-    alignItems: 'center', 
-
+    alignItems: 'center',
   },
 });
