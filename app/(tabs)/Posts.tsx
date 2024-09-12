@@ -20,13 +20,6 @@ export default function Posts() {
   const [text, onChangeText] = React.useState('');
 
   const router = useRouter();
-
-   const handleRedirect = () => {
-    router.push({
-      pathname: '/(tabs)/index',
-      params: { name: text },
-    });
-  };
   
 
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -76,9 +69,9 @@ export default function Posts() {
     </ThemedView></>
 
     <View style={styles.button}>
-    <MyButton handleRedirect={handleRedirect} buttonText="Post" />
+    <MyButton handleRedirect={() => {}} buttonText="Post" />
     </View>
-    
+
     </GestureHandlerRootView>
   );
 }
