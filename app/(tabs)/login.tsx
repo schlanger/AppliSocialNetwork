@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
-import { TextInput, View, Text, StyleSheet } from 'react-native';
+import { TextInput, View, Text, StyleSheet, Touchable } from 'react-native';
 import MyButton from "@/components/MyButton";
 import { auth } from '@/config/firebaseConfig';  
 import { signInWithEmailAndPassword } from 'firebase/auth'; // Import the signInWithEmailAndPassword method
+import { useRouter } from 'expo-router';
+import { GestureHandlerRootView, TouchableOpacity } from 'react-native-gesture-handler';
 
 export default function Login() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const router = useRouter();
+
+  const handleRedirect = () => { 
+    router.push({ pathname: '/(tabs)/signup' }); // Redirige vers la page d'inscription
+  }
 
   const handleEmail = (text: string) => {
     setEmail(text);
@@ -29,6 +36,7 @@ export default function Login() {
   };
 
   return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
     <View style={styles.container}>
       <Text style={styles.title}>Connexion</Text>
       <TextInput
@@ -45,8 +53,15 @@ export default function Login() {
         secureTextEntry
       />
       {error ? <Text style={styles.error}>{error}</Text> : null}
+
       <MyButton handleRedirect={handleLogin} buttonText="login" />
+
+      <TouchableOpacity onPress={handleRedirect}>
+        <Text>Pas encore de compte ? Inscrivez-vous</Text>
+      </TouchableOpacity>
+      
     </View>
+    </GestureHandlerRootView>
   );
 };
 
