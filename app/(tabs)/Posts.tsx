@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { StyleSheet, Image, Platform, Button, View, Alert } from 'react-native';
+import { StyleSheet, Image, Platform, Button, View, Alert,Text } from 'react-native';
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
@@ -9,14 +9,16 @@ import Header from '@/components/header';
 import { TextInput } from 'react-native-paper';
 import { SafeAreaView } from 'react-native';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import MyButton from '@/components/MyButton';
 import * as ImagePicker from 'expo-image-picker';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 // Import Firebase
-import { firestore, storage } from '@/config/firebaseConfig';
-import { addDoc, collection } from 'firebase/firestore';
+import { firestore, storage,auth } from '@/config/firebaseConfig';
+import { addDoc, collection, doc, getDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { onAuthStateChanged } from 'firebase/auth';
+import { unsubscribeFromKeyboardEvents } from 'react-native-reanimated/lib/typescript/reanimated2/core';
 
 
 
@@ -24,6 +26,9 @@ export default function Posts() {
   const [text, onChangeText] = React.useState('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [userData, setUserData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   const router = useRouter();
 
@@ -82,20 +87,35 @@ export default function Posts() {
     }
   };
 
-  // Fonction pour gérer la soumission du post
+   
   const handlePost = async () => {
     let imageUrl = null;
+    if (auth.currentUser != null) {
     if (selectedImage) {
       imageUrl = await uploadImageToFirebase(selectedImage);
     }
     savePostToFirestore(imageUrl);
+  }else {
+      alert('veuillez vous connecter pour faire un post')
+      router.push({ pathname: '/(tabs)/login' });
+    }
   };
+/*
+  if (loading) {
+    return <Text>Chargement...</Text>;
+  }*/
+
+  if (error) {
+    return <Text>{error}</Text>;
+  }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Header />
       <ThemedView>
         <ThemedText style={styles.title}>Posts</ThemedText>
+
+
         <TextInput
           style={styles.input}
           placeholder="Write a post..."
@@ -125,6 +145,15 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  input2: {
+    height: 40,
+    width: 300,
     margin: 12,
     borderWidth: 1,
     padding: 10,
