@@ -18,7 +18,6 @@ import { firestore, storage,auth } from '@/config/firebaseConfig';
 import { addDoc, collection, doc, getDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { onAuthStateChanged } from 'firebase/auth';
-import { unsubscribeFromKeyboardEvents } from 'react-native-reanimated/lib/typescript/reanimated2/core';
 
 
 
@@ -26,11 +25,12 @@ export default function Posts() {
   const [text, onChangeText] = React.useState('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   const router = useRouter();
+
+  //console.log(auth.currentUser.uid.);
 
   // Fonction pour ouvrir la galerie d'images/vidéos
   const pickImage = async () => {
@@ -73,11 +73,29 @@ export default function Posts() {
   // Fonction pour sauvegarder le post dans Firestore
   const savePostToFirestore = async (imageUrl: string | null) => {
     try {
+      const uid = auth.currentUser?.uid; // Récupérer l'UID de l'utilisateur connecté
+      if (!uid) {
+        throw new Error('Utilisateur non connecté');
+      }
+  
+      // Vérifier que le document utilisateur existe
+      const userDoc = await getDoc(doc(firestore, 'users', uid));
+      if (!userDoc.exists()) {
+        throw new Error('Données utilisateur introuvables');
+      }
+      const userdata = userDoc.data();
+      
+      // Ajouter le post à Firestore
       await addDoc(collection(firestore, 'posts'), {
         text: text,
         imageUrl: imageUrl || '',
         createdAt: new Date(),
+        name: userdata?.name,
+        firstName: userdata?.firstName,
+        job: userdata?.job,
+        photoURL: userdata?.photoURL,
       });
+  
       Alert.alert('Succès', 'Le post a été ajouté avec succès !');
       onChangeText('');
       setSelectedImage(null);
