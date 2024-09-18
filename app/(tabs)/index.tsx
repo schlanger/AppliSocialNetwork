@@ -7,7 +7,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import { firestore } from '@/config/firebaseConfig';
 
 export default function Index() {
-  const [posts, setPosts] = useState<{ id: string; createdAt: string; text: string; imageUrl: string | null; }[]>([]);
+  const [posts, setPosts] = useState<{ id: string; createdAt: string; name: string; firstName: string; job: string; photoURL: string; text: string; imageUrl: string | null; }[]>([]);
   const [likeCount, setLikeCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
@@ -31,6 +31,10 @@ export default function Index() {
           return {
             id: doc.id,
             createdAt, // Utiliser la date formatée
+            name: data.name,
+            firstName: data.firstName,
+            job: data.job,
+            photoURL: data.photoURL,
             text: data.text || 'Aucun contenu',
             imageUrl: data.imageUrl || null,
           };
@@ -61,7 +65,12 @@ export default function Index() {
         renderItem={({ item }) => (
           <ThemedView style={styles.postContainer}>
             <View style={styles.postHeader}>
-              <Text style={styles.username}>{item.createdAt}</Text>
+              <Image source={{ uri: item.photoURL }} style={styles.avatar} />
+              <View>
+              <Text style={styles.username}>{item.firstName} {item.name}</Text>
+              <Text style={styles.jobTitle}>{item.job}</Text>
+              <Text style={styles.jobTitle}>{item.createdAt}</Text>
+            </View>
             </View>
 
             <Text style={styles.postContent}>{item.text}</Text>
@@ -104,6 +113,9 @@ const styles = StyleSheet.create({
   username: {
     fontWeight: 'bold',
   },
+  jobTitle: {
+    color: '#555',
+  },
   postContent: {
     marginBottom: 10,
   },
@@ -115,6 +127,12 @@ const styles = StyleSheet.create({
     padding: 5,
     backgroundColor: '#EAEAEA',
     borderRadius: 5,
+  },
+  avatar: {
+    height: 40,
+    width: 40,
+    borderRadius: 20,
+    marginRight: 10,
   },
   image: {
     height: 200,
