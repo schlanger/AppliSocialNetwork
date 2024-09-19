@@ -1,15 +1,17 @@
-import { View, Image, StyleSheet, FlatList, Text, TouchableOpacity } from 'react-native';
+import { View, Image, StyleSheet, FlatList, Text, TouchableOpacity,Linking } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useEffect, useState } from 'react';
 import Header from '@/components/header';
 import { collection, getDocs } from 'firebase/firestore';
 import { firestore } from '@/config/firebaseConfig';
+import {useRouter} from 'expo-router';
 
 export default function Index() {
   const [posts, setPosts] = useState<{ id: string; createdAt: string; name: string; firstName: string; job: string; photoURL: string; text: string; imageUrl: string | null; }[]>([]);
   const [likeCount, setLikeCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   const handleLikePress = () => {
     setLikeCount(likeCount + 1);
@@ -75,9 +77,11 @@ export default function Index() {
 
             <Text style={styles.postContent}>{item.text}</Text>
 
+            <TouchableOpacity onPress={() => item.imageUrl && Linking.openURL(item.imageUrl)}>
             {item.imageUrl && (
-              <Image source={{ uri: item.imageUrl }} style={styles.image} />
+              <Image source={{ uri: item.imageUrl }} style={styles.image}/>
             )}
+            </TouchableOpacity>
 
             <View style={styles.postActions}>
               <TouchableOpacity style={styles.actionButton} onPress={handleLikePress}>
@@ -135,7 +139,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   image: {
-    height: 200,
-    width: '100%',
+    height: 360,
+    width: 360
   },
 });
