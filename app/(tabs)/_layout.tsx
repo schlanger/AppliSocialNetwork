@@ -33,6 +33,25 @@ export default function TabLayout() {
           ),
         }}
       />
+
+      <Tabs.Screen
+        name="login"
+        options={{
+          title: 'Connexion',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="signup"
+        options={{
+          title: 'Inscription',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
