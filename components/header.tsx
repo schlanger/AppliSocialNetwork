@@ -9,7 +9,7 @@ export default function Header() {
   const router = useRouter();
 
   const handleProfileClick = () => {
-    router.push({ pathname: '/(tabs)/login' }); // Redirige vers la page de connexion
+    router.push({ pathname: '/(tabs)/profile' }); // Redirige vers la page de connexion
   };
 
 

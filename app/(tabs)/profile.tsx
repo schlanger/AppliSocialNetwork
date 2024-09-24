@@ -1,13 +1,32 @@
+import MyButton from "@/components/MyButton";
 import { firestore, auth } from "@/config/firebaseConfig";
 import { collection, getDocs,doc, getDoc } from "firebase/firestore";
+import React from "react";
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TextInput, Image } from "react-native";
 import { FlatList, GestureHandlerRootView } from "react-native-gesture-handler";
+import { updateCurrentUser } from "firebase/auth";
+import { updateProfile } from "firebase/auth";
 
 
 export default function profil() {
 
     const [profil, setProfil] = useState< {id: string; name: string, firstname: string, email: string; job: string, photoURL: string}[] >([]);
+    const [text, onChangeText] = React.useState('');
+
+    const updateProfil = async () => {
+        
+        if (auth.currentUser) {
+            await updateProfile(auth.currentUser, {
+                displayName: text,
+            });
+        } else {
+            console.error("User is not authenticated");
+        }
+
+    }
+
+
 
     useEffect(() => {
         const fetchProfil = async () => {
@@ -60,8 +79,9 @@ return (
             <Image style={styles.image} source={{ uri: item.photoURL }} />
             <TextInput style= {styles.input} > {item.name}</TextInput>
             <TextInput style = {styles.input} > {item.firstname}</TextInput>
-            <TextInput style = {styles.input}> {item.email}</TextInput>
-            <TextInput style = {styles.input}> {item.job}</TextInput>
+            <TextInput style = {styles.input} > {item.email}</TextInput>
+            <TextInput style = {styles.input} > {item.job}</TextInput>
+            <MyButton handleRedirect={() => {updateProfil}} buttonText="Modifier" />
         </View>
         )}
         keyExtractor={(item) => item.id}
@@ -100,5 +120,8 @@ const styles = StyleSheet.create({
         height: 150,
         marginTop: 20,
         borderRadius : 100,
+      },
+      button : {
+        marginTop: 20,
       },
 });

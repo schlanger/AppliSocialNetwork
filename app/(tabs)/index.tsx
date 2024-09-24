@@ -4,19 +4,36 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useEffect, useState } from 'react';
 import Header from '@/components/header';
 import { collection, getDocs } from 'firebase/firestore';
-import { firestore } from '@/config/firebaseConfig';
+import { firestore,storage } from '@/config/firebaseConfig';
 import {useRouter} from 'expo-router';
+import { Video, ResizeMode } from 'expo-av';
+import { getMetadata,ref } from 'firebase/storage';
 
 export default function Index() {
   const [posts, setPosts] = useState<{ id: string; createdAt: string; name: string; firstName: string; job: string; photoURL: string; text: string; imageUrl: string | null; }[]>([]);
   const [likeCount, setLikeCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [mediaTypes, setMediaTypes] = useState<{ [key: string]: string }>({});
   const router = useRouter();
 
   const handleLikePress = () => {
     setLikeCount(likeCount + 1);
   };
 
+
+  const fetchFileType = async (imageUrl: string | undefined, id: any) => {
+    const fileRef = ref(storage, imageUrl); // Crée une référence vers le fichier
+    try {
+      const metadata = await getMetadata(fileRef); // Récupère les métadonnées du fichier
+      setMediaTypes((prev) => ({
+        ...prev,
+        [id]: metadata.contentType, // Stocke le type MIME en fonction de l'ID du post
+      }));
+    } catch (error) {
+      console.error('Erreur lors de la récupération des métadonnées :', error);
+    }
+  };
+  
   // Récupérer les posts de Firestore
   useEffect(() => {
     const fetchPosts = async () => {
@@ -43,6 +60,12 @@ export default function Index() {
         });
 
         setPosts(postsData);
+
+        postsData.forEach((post) => {
+          if (post.imageUrl) {
+            fetchFileType(post.imageUrl, post.id);
+          }
+        });
 
       } catch (error) {
         console.error("Erreur lors de la récupération des posts :", error);
@@ -77,10 +100,28 @@ export default function Index() {
 
             <Text style={styles.postContent}>{item.text}</Text>
 
-            <TouchableOpacity onPress={() => item.imageUrl && Linking.openURL(item.imageUrl)}>
-            {item.imageUrl && (
-              <Image source={{ uri: item.imageUrl }} style={styles.image}/>
-            )}
+            <TouchableOpacity
+              onPress={() => item.imageUrl && Linking.openURL(item.imageUrl)}
+            >
+
+              {mediaTypes[item.id]?.startsWith('image/') && (
+                <Image
+                  source={{ uri: item.imageUrl || undefined }}
+                  style={styles.image}
+                />
+              )}
+
+              {mediaTypes[item.id]?.startsWith('video/') && (
+                <Video
+                  source={{ uri: item.imageUrl || '' }}
+                  rate={1.0}
+                  volume={1.0}
+                  resizeMode={ResizeMode.COVER}
+                  shouldPlay
+                  isLooping
+                  style={styles.image}
+                />
+              )}
             </TouchableOpacity>
 
             <View style={styles.postActions}>
