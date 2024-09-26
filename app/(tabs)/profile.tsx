@@ -1,6 +1,6 @@
 import MyButton from "@/components/MyButton";
 import { firestore, auth } from "@/config/firebaseConfig";
-import { collection, getDocs,doc, getDoc } from "firebase/firestore";
+import { collection, getDocs,doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import React from "react";
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TextInput, Image } from "react-native";
@@ -13,19 +13,34 @@ export default function profil() {
 
     const [profil, setProfil] = useState< {id: string; name: string, firstname: string, email: string; job: string, photoURL: string}[] >([]);
     const [text, onChangeText] = React.useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [name, setName] = useState('');
+    const [firstname, setFirstname] = useState('');
+    const [job, setJob] = useState('');
+    const [photoURL, setPhotoURL] = useState('');
 
-    const updateProfil = async () => {
-        
-        if (auth.currentUser) {
-            await updateProfile(auth.currentUser, {
-                displayName: text,
-            });
-        } else {
-            console.error("User is not authenticated");
-        }
-
+    const handleName = (text: string) => {
+        setName(text);
     }
 
+    const handlefirstname = (text: string) => { 
+        setFirstname(text);
+    }
+
+    const handleJob = (text: string) => {
+        setJob(text);
+    }
+
+    const handleEmail = (text: string) => {
+        setEmail(text);
+    };
+
+    if(auth.currentUser === null) {
+        alert("Vous n'êtes pas connecté");
+    }
+
+    const userID = auth.currentUser?.uid;
 
 
     useEffect(() => {
@@ -68,6 +83,45 @@ export default function profil() {
     
         fetchProfil();
     }, []);
+
+    const updateUser = async ( name: string, firstName: string , job : string , photoURL: string ) => {
+            if (!userID) {
+                console.error("User ID is undefined");
+                return;
+            }
+            const userDocRef = doc(firestore, 'users', userID);
+            const email = auth.currentUser && auth.currentUser.email ? auth.currentUser.email : "";
+
+        try {
+
+        const userDocSnap = await getDoc(userDocRef);
+
+        if (userDocSnap.exists()) {
+        const userData = userDocSnap.data();
+
+        // Mettre à jour seulement les champs modifiés
+        await updateDoc(userDocRef, {
+            
+            name: name || userData.name,           
+            firstName: firstName || userData.firstName,
+            job: job || userData.job,
+            photoURL: photoURL || userData.photoURL,
+        });
+
+        console.log('Profil mis à jour');
+        alert('Profil mis à jour');
+
+        } else {
+        console.error("Le document utilisateur n'existe pas");
+        }
+
+        
+
+        } catch (error) {
+            console.error('Erreur lors de la mise à jour du profil :', error);
+            alert('Erreur lors de la mise à jour du profil');
+        }
+};
     
 return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -77,11 +131,11 @@ return (
         <View style= {styles.container}>
             <Text style= {styles.title} > Mon Profil</Text>
             <Image style={styles.image} source={{ uri: item.photoURL }} />
-            <TextInput style= {styles.input} > {item.name}</TextInput>
-            <TextInput style = {styles.input} > {item.firstname}</TextInput>
-            <TextInput style = {styles.input} > {item.email}</TextInput>
-            <TextInput style = {styles.input} > {item.job}</TextInput>
-            <MyButton handleRedirect={() => {updateProfil}} buttonText="Modifier" />
+            <TextInput style= {styles.input} onChangeText={handleName} > {item.name}</TextInput>
+            <TextInput style = {styles.input} onChangeText={handlefirstname} > {item.firstname}</TextInput>
+            <TextInput style = {styles.input} onChangeText={handleEmail} > {item.email}</TextInput>
+            <TextInput style = {styles.input} onChangeText={handleJob} > {item.job}</TextInput>
+            <MyButton handleRedirect={() => {updateUser (name,firstname, job, photoURL)}} buttonText="Modifier" />
         </View>
         )}
         keyExtractor={(item) => item.id}
@@ -125,3 +179,5 @@ const styles = StyleSheet.create({
         marginTop: 20,
       },
 });
+
+
