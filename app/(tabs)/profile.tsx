@@ -7,6 +7,7 @@ import { View, Text, StyleSheet, TextInput, Image } from "react-native";
 import { FlatList, GestureHandlerRootView } from "react-native-gesture-handler";
 import { updateCurrentUser } from "firebase/auth";
 import { updateProfile } from "firebase/auth";
+import { useRouter } from "expo-router";
 
 
 export default function profil() {
@@ -19,6 +20,8 @@ export default function profil() {
     const [firstname, setFirstname] = useState('');
     const [job, setJob] = useState('');
     const [photoURL, setPhotoURL] = useState('');
+
+    const router = useRouter();
 
     const handleName = (text: string) => {
         setName(text);
@@ -36,6 +39,10 @@ export default function profil() {
         setEmail(text);
     };
 
+    const RedirectToLogin = () => {
+        router.push({ pathname: '/(tabs)/login' });
+    };
+
     if(auth.currentUser === null) {
         alert("Vous n'êtes pas connecté");
     }
@@ -51,6 +58,7 @@ export default function profil() {
 
                 if (!uid) {
                     throw new Error("User is not authenticated");
+                    RedirectToLogin();
                 }
     
                 // Accéder directement au document utilisateur dans la collection 'users'
@@ -76,8 +84,9 @@ export default function profil() {
                     console.log('Aucun profil trouvé pour cet utilisateur');
                 }
             } catch (error) {
-                console.error("Erreur lors de la récupération du profil :", error);
-                alert("Impossible de se connecter à Firestore. Vérifiez votre connexion Internet.");
+                alert("Veuillez vous connecter pour accéder à cette page");
+                RedirectToLogin();
+
             }
         };
     
