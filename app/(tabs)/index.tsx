@@ -1,4 +1,4 @@
-import { View, Image, StyleSheet, FlatList, Text, TouchableOpacity,Linking } from 'react-native';
+import { View, Image, StyleSheet, FlatList, Text, TouchableOpacity,Linking, RefreshControl } from 'react-native';
 import { ThemedView } from '@/components/ThemedView';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useEffect, useState } from 'react';
@@ -8,12 +8,14 @@ import { firestore,storage } from '@/config/firebaseConfig';
 import {useRouter} from 'expo-router';
 import { Video, ResizeMode } from 'expo-av';
 import { getMetadata,ref } from 'firebase/storage';
+import { ScrollView } from 'react-native-virtualized-view'
 
 export default function Index() {
   const [posts, setPosts] = useState<{ id: string; createdAt: string; name: string; firstName: string; job: string; photoURL: string; text: string; imageUrl: string | null; }[]>([]);
   const [likeCount, setLikeCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [mediaTypes, setMediaTypes] = useState<{ [key: string]: string }>({});
+  const [refreshing, setRefreshing] = useState(false);
   const router = useRouter();
 
   const handleLikePress = () => {
@@ -35,7 +37,6 @@ export default function Index() {
   };
   
   // Récupérer les posts de Firestore
-  useEffect(() => {
     const fetchPosts = async () => {
       try {
         const postsCollection = collection(firestore, 'posts');
@@ -75,8 +76,15 @@ export default function Index() {
       }
     };
 
-    fetchPosts();
-  }, []);
+    const onRefresh = async () => {
+      setRefreshing(true);
+      await fetchPosts();
+      setRefreshing(false);
+    };
+
+    useEffect(() => {
+      fetchPosts();
+    }, []);
 
   if (loading) {
     return <Text>Chargement...</Text>;
@@ -85,6 +93,11 @@ export default function Index() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Header />
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
       <FlatList
         data={posts}
         renderItem={({ item }) => (
@@ -124,6 +137,7 @@ export default function Index() {
               )}
             </TouchableOpacity>
 
+           {/* 
             <View style={styles.postActions}>
               <TouchableOpacity style={styles.actionButton} onPress={handleLikePress}>
                 <Text>👍 Like {likeCount} </Text>
@@ -136,10 +150,12 @@ export default function Index() {
                 <Text>🔄 Share</Text>
               </TouchableOpacity>
             </View>
+            */}
           </ThemedView>
         )}
         keyExtractor={(item) => item.id}
       />
+      </ScrollView>
     </GestureHandlerRootView>
   );
 }
