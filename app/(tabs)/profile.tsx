@@ -3,13 +3,14 @@ import { firestore, auth, storage } from "@/config/firebaseConfig";
 import { collection, getDocs,doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import React from "react";
 import { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TextInput, Image, Touchable, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TextInput, Image, Touchable, TouchableOpacity, RefreshControl } from "react-native";
 import { FlatList, GestureHandlerRootView } from "react-native-gesture-handler";
 import { updateCurrentUser } from "firebase/auth";
 import { updateProfile } from "firebase/auth";
 import { useRouter } from "expo-router";
 import * as ImagePicker from 'expo-image-picker';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ScrollView } from "react-native-virtualized-view";
 
 
 export default function profil() {
@@ -24,6 +25,7 @@ export default function profil() {
     const [photoURL, setPhotoURL] = useState('');
     const router = useRouter();
     const [uploading, setUploading] = useState(false);
+    const [refreshing, setRefreshing] = useState(false);
 
     const handleName = (text: string) => {
         setName(text);
@@ -55,7 +57,6 @@ export default function profil() {
     const userID = auth.currentUser?.uid;
 
 
-    useEffect(() => {
         const fetchProfil = async () => {
             try {
                 // Récupérer l'UID de l'utilisateur connecté
@@ -95,9 +96,15 @@ export default function profil() {
             }
         };
     
-        fetchProfil();
-    }, []);
-
+        const onRefresh = async () => {
+            setRefreshing(true);
+            await fetchProfil();
+            setRefreshing(false);
+          };
+      
+          useEffect(() => {
+            fetchProfil();
+          }, []);
 
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -176,6 +183,11 @@ export default function profil() {
     
 return (
     <GestureHandlerRootView style={{ flex: 1 }}>
+        <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        >
         <FlatList
         data={profil}
         renderItem={({ item }) => (
@@ -193,6 +205,7 @@ return (
         )}
         keyExtractor={(item) => item.id}
         />
+        </ScrollView>
     </GestureHandlerRootView>
     );
 }

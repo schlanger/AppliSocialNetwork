@@ -152,6 +152,8 @@ export default function Index() {
             </View>
             */}
           </ThemedView>
+
+          
         )}
         keyExtractor={(item) => item.id}
       />
@@ -164,7 +166,7 @@ const styles = StyleSheet.create({
   postContainer: {
     backgroundColor: '#FFF',
     padding: 15,
-    marginBottom: 10,
+    marginBottom: 50,
   },
   postHeader: {
     flexDirection: 'row',
