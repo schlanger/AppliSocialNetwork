@@ -25,7 +25,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="Posts"
+        name="ajoutPost"
         options={{
           title: 'Posts',
           tabBarIcon: () => (

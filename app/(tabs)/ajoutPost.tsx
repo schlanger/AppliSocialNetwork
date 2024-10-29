@@ -77,23 +77,13 @@ export default function Posts() {
       if (!uid) {
         throw new Error('Utilisateur non connecté');
       }
-  
-      // Vérifier que le document utilisateur existe
-      const userDoc = await getDoc(doc(firestore, 'users', uid));
-      if (!userDoc.exists()) {
-        throw new Error('Données utilisateur introuvables');
-      }
-      const userdata = userDoc.data();
       
       // Ajouter le post à Firestore
       await addDoc(collection(firestore, 'posts'), {
         text: text,
         imageUrl: imageUrl || '',
         createdAt: new Date(),
-        name: userdata?.name,
-        firstName: userdata?.firstName,
-        job: userdata?.job,
-        photoURL: userdata?.photoURL,
+        userID: uid,
       });
   
       Alert.alert('Succès', 'Le post a été ajouté avec succès !');

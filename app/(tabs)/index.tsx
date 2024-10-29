@@ -3,8 +3,8 @@ import { ThemedView } from '@/components/ThemedView';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useEffect, useState } from 'react';
 import Header from '@/components/header';
-import { collection, getDocs } from 'firebase/firestore';
-import { firestore,storage } from '@/config/firebaseConfig';
+import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
+import { auth, firestore,storage } from '@/config/firebaseConfig';
 import {useRouter} from 'expo-router';
 import { Video, ResizeMode } from 'expo-av';
 import { getMetadata,ref } from 'firebase/storage';
@@ -36,55 +36,74 @@ export default function Index() {
     }
   };
   
-  // Récupérer les posts de Firestore
-    const fetchPosts = async () => {
-      try {
-        const postsCollection = collection(firestore, 'posts');
-        const postsSnapshot = await getDocs(postsCollection);
+  const fetchPosts = async () => {
+    try {
+      const postsCollection = collection(firestore, 'posts');
+      const postsSnapshot = await getDocs(postsCollection);
 
-        const postsData = postsSnapshot.docs.map(doc => {
-          const data = doc.data();
+      const postsData = await Promise.all(
+        postsSnapshot.docs.map(async (postDoc) => {
+          const postData = postDoc.data();
+          const postId = postDoc.id;
 
-          // Convertir le Timestamp en Date lisible
-          const createdAt = data.createdAt ? data.createdAt.toDate().toLocaleString() : 'Date inconnue';
-
-          return {
-            id: doc.id,
-            createdAt, // Utiliser la date formatée
-            name: data.name,
-            firstName: data.firstName,
-            job: data.job,
-            photoURL: data.photoURL,
-            text: data.text || 'Aucun contenu',
-            imageUrl: data.imageUrl || null,
-          };
-        });
-
-        setPosts(postsData);
-
-        postsData.forEach((post) => {
-          if (post.imageUrl) {
-            fetchFileType(post.imageUrl, post.id);
+          // Récupérer les informations de l'utilisateur
+          const userId = postData.userID;
+          
+          if (!userId) {
+            console.warn(`Aucun userId pour le post ${postId}`);
+            return null;
           }
-        });
 
-      } catch (error) {
-        console.error("Erreur lors de la récupération des posts :", error);
-        alert("Impossible de se connecter à Firestore. Vérifiez votre connexion Internet.");
-      } finally {
-        setLoading(false);
-      }
-    };
+          const userDocRef = doc(firestore, 'users', userId);
+          const userDoc = await getDoc(userDocRef);
+          if (!userDoc.exists()) {
+            console.warn(`Utilisateur introuvable pour le post ${postId}`);
+            return null;
+          }
 
-    const onRefresh = async () => {
-      setRefreshing(true);
-      await fetchPosts();
-      setRefreshing(false);
-    };
+          const userData = userDoc.data();
+          const createdAt = postData.createdAt ? postData.createdAt.toDate().toLocaleString() : 'Date inconnue';
 
-    useEffect(() => {
-      fetchPosts();
-    }, []);
+          // Compléter les informations du post avec les informations utilisateur
+          const completePostData = {
+            id: postId,
+            createdAt,
+            name: userData.name,
+            firstName: userData.firstName,
+            job: userData.job,
+            photoURL: userData.photoURL,
+            text: postData.text || 'Aucun contenu',
+            imageUrl: postData.imageUrl || null,
+          };
+
+          // Vérifier et récupérer le type de fichier si imageUrl est défini
+          if (postData.imageUrl) {
+            await fetchFileType(postData.imageUrl, postId);
+          }
+
+          return completePostData;
+        })
+      );
+
+      // Filtrer les posts valides et mettre à jour l'état
+      setPosts(postsData.filter((post) => post !== null));
+    } catch (error) {
+      console.error('Erreur lors de la récupération des posts :', error);
+      alert('Impossible de se connecter à Firestore. Vérifiez votre connexion Internet.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchPosts();
+    setRefreshing(false);
+  };
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
 
   if (loading) {
     return <Text>Chargement...</Text>;
@@ -198,7 +217,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   image: {
-    height: 360,
-    width: 360
+    height: 380,
+    width: 360,
   },
 });
