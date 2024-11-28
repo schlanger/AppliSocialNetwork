@@ -1,4 +1,4 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
+import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, Image, Platform, Button, View, Alert,Text } from 'react-native';
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
@@ -11,7 +11,7 @@ import { SafeAreaView } from 'react-native';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import MyButton from '@/components/MyButton';
-import * as ImagePicker from 'expo-image-picker';
+import * as ImagePicker  from 'expo-image-picker';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 // Import Firebase
 import { firestore, storage,auth } from '@/config/firebaseConfig';

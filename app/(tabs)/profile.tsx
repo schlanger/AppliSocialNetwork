@@ -7,7 +7,7 @@ import { View, Text, StyleSheet, TextInput, Image, Touchable, TouchableOpacity, 
 import { FlatList, GestureHandlerRootView } from "react-native-gesture-handler";
 import { updateCurrentUser } from "firebase/auth";
 import { updateProfile } from "firebase/auth";
-import { useRouter } from "expo-router";
+import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { ScrollView } from "react-native-virtualized-view";

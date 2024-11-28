@@ -5,8 +5,8 @@ import { useEffect, useState } from 'react';
 import Header from '@/components/header';
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 import { auth, firestore,storage } from '@/config/firebaseConfig';
-import {useRouter} from 'expo-router';
-import { Video, ResizeMode } from 'expo-av';
+import { useRouter } from 'expo-router';
+import { ResizeMode, Video } from 'expo-av';
 import { getMetadata,ref } from 'firebase/storage';
 import { ScrollView } from 'react-native-virtualized-view'
 

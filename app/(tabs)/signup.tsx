@@ -1,11 +1,11 @@
 import MyButton from "@/components/MyButton";
 import { auth,firestore,storage } from "@/config/firebaseConfig";
-import { useRouter } from "expo-router";
+import { useRouter } from 'expo-router';
+import * as ImagePicker from 'expo-image-picker';
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { StyleSheet, TextInput,Text, View, TouchableOpacity, Image } from "react-native";
 import {doc,setDoc} from 'firebase/firestore';
-import * as ImagePicker from 'expo-image-picker';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 export default function Signup() {

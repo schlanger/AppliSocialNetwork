@@ -19,7 +19,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) => (
             <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
           ),
         }}
@@ -38,7 +38,7 @@ export default function TabLayout() {
         name="login"
         options={{
           title: 'Connexion',
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) => (
             <TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />
           ),
         }}
@@ -47,7 +47,7 @@ export default function TabLayout() {
         name="signup"
         options={{
           title: 'Inscription',
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ color, focused }: { color: string; focused: boolean }) => (
             <TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />
           ),
         }}
