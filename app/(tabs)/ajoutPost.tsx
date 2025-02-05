@@ -129,6 +129,8 @@ export default function Posts() {
           placeholder="Write a post..."
           onChangeText={onChangeText}
           value={text}
+          multiline
+          scrollEnabled
         />
         <ThemedText style={styles.title}>Upload Image or Video</ThemedText>
         <Button title="Select Image or Video" onPress={pickImage} />
@@ -152,12 +154,13 @@ const styles = StyleSheet.create({
     right: 0,
   },
   input: {
-    height: 40,
-    margin: 12,
+    height: 100, // Hauteur fixe
     borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
     padding: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
+    textAlignVertical: 'top', // Pour aligner le texte au haut du champ
+    backgroundColor: '#fff',
   },
   input2: {
     height: 40,

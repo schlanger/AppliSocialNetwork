@@ -29,6 +29,7 @@ export default function profil() {
 
     const handleName = (text: string) => {
         setName(text);
+        //console.log(name);
     }
 
     const handlefirstname = (text: string) => { 
@@ -196,10 +197,10 @@ return (
             <TouchableOpacity onPress={pickImage}>
             <Image style={styles.image} source={{ uri: item.photoURL }} />
             </TouchableOpacity>
-            <TextInput style= {styles.input} onChangeText={handleName} > {item.name}</TextInput>
-            <TextInput style = {styles.input} onChangeText={handlefirstname} > {item.firstname}</TextInput>
-            <TextInput style = {styles.input} onChangeText={handleEmail} > {item.email}</TextInput>
-            <TextInput style = {styles.input} onChangeText={handleJob} > {item.job}</TextInput>
+            <TextInput style= {styles.input} onChangeText={handleName} value={item.name} ></TextInput>
+            <TextInput style = {styles.input}> {item.firstname}</TextInput>
+            <TextInput style = {styles.input}  > {item.email}</TextInput>
+            <TextInput style = {styles.input} > {item.job}</TextInput>
             <MyButton handleRedirect={() => {updateUser (name,firstname, job, photoURL)}} buttonText="Modifier" />
         </View>
         )}

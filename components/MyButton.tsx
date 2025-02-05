@@ -1,7 +1,6 @@
 import React from 'react';
 import { View,StyleSheet } from 'react-native';
 import { Button } from 'react-native-paper';
-import { ColorProperties } from 'react-native-reanimated/lib/typescript/reanimated2/Colors';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 const MyButton = ({ handleRedirect, buttonText }: { handleRedirect: () => void; buttonText: string }) => {
