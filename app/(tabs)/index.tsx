@@ -21,6 +21,9 @@ export default function Index() {
   const handleLikePress = () => {
     setLikeCount(likeCount + 1);
   };
+  const handleProfileClick = () => {
+      router.push({ pathname: '/(tabs)/profile' }); // Redirige vers la page du profil
+    };
 
 
   const fetchFileType = async (imageUrl: string | undefined, id: any) => {
@@ -123,11 +126,11 @@ export default function Index() {
           <ThemedView style={styles.postContainer}>
             <View style={styles.postHeader}>
               <Image source={{ uri: item.photoURL }} style={styles.avatar} />
-              <View>
+              <TouchableOpacity onPress={handleProfileClick}>
               <Text style={styles.username}>{item.firstName} {item.name}</Text>
               <Text style={styles.jobTitle}>{item.job}</Text>
               <Text style={styles.jobTitle}>{item.createdAt}</Text>
-            </View>
+            </TouchableOpacity>
             </View>
 
             <Text style={styles.postContent}>{item.text}</Text>

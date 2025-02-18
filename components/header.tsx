@@ -21,9 +21,6 @@ return (
     <><ThemedView style={styles.container}></ThemedView><ThemedView style={styles.header}>
       <StatusBar hidden={true} />
         <Image source={require('@/assets/images/logo.png')} style={styles.logo} />
-        <TouchableOpacity onPress={handleProfileClick}>
-        <Image source={require('@/assets/images/profil.png')} style={styles.profil} />
-        </TouchableOpacity>
     </ThemedView></>)
 
 };
@@ -41,20 +38,13 @@ return (
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 2,
-    backgroundColor: 'skyblue',
+    backgroundColor: '#EAEAEA',
   },
   logo: {
     height: 60,
     width: 100,
     marginLeft: -15,
     marginTop: 30
-  },
-  profil: {
-    height: 50,
-    width: 40,
-    borderRadius: 15,
-    marginLeft: 15,
-    marginTop: 50
   },
 
 });
