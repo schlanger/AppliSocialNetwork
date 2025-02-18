@@ -53,6 +53,7 @@ export default function Login() {
       // Sign in with Firebase Authentication
       await signInWithEmailAndPassword(auth, email, password);
       alert('Connexion réussie !');
+      router.push({pathname: '/(tabs)/' });
     } catch (error) {
       setError('Email ou mot de passe incorrect');
     }
